@@ -65,11 +65,6 @@ namespace BlazorWithIdentity.Server
             });
 
             services.AddControllers().AddNewtonsoftJson();
-            services.AddResponseCompression(opts =>
-            {
-                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-                    new[] { "application/octet-stream" });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -80,15 +75,13 @@ namespace BlazorWithIdentity.Server
                 serviceScope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
             }
 
-            app.UseResponseCompression();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseBlazorDebugging();
+                app.UseWebAssemblyDebugging();
             }
 
-            app.UseClientSideBlazorFiles<Client.Program>();
+            app.UseBlazorFrameworkFiles();
 
             app.UseRouting();
             app.UseAuthentication();
@@ -97,7 +90,7 @@ namespace BlazorWithIdentity.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
-                endpoints.MapFallbackToClientSideBlazor<Client.Program>("index.html");
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }
